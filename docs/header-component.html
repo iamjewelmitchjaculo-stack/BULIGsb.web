@@ -1,0 +1,59 @@
+<!-- Donation Page Header with Logout & Messages -->
+<style>
+  .donation-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+  }
+  .header-left a { margin-right: 1rem; }
+  .header-right {
+    display: flex;
+    gap: 0.8rem;
+    align-items: center;
+  }
+  .header-right button,
+  .header-right a {
+    padding: 0.6rem 1.2rem;
+    border-radius: 20px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .btn-messages {
+    background: var(--primary-orange);
+    color: white;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .btn-messages:hover {
+    background: var(--dark-orange);
+    color: white;
+  }
+  .btn-logout {
+    background: var(--dark-orange);
+    color: white;
+    border: none;
+  }
+  .btn-logout:hover {
+    background: #d44500;
+    color: white;
+  }
+</style>
+
+<div class="donation-page-header">
+  <div class="header-left">
+    <a href="relief.html" class="btn btn-light" style="border-radius:20px;">⬅ Back</a>
+  </div>
+  <div class="header-right">
+    <a href="messages.html" class="btn btn-messages" id="messagesBtn" style="display:none;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span style="font-weight:600">Messages</span>
+    </a>
+  </div>
+</div>
