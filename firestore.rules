@@ -1,0 +1,76 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Users: allow users to create their own profile and read/update their own data.
+    match /users/{userId} {
+      allow create: if request.auth != null && request.auth.uid == userId;
+      
+      // Helper function to check if user is admin
+      function isAdmin() {
+        return request.auth != null && 
+               get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      }
+      
+      // Users can read their own document; admins can read any user
+      allow read: if request.auth != null && (request.auth.uid == userId || isAdmin());
+      
+      allow update: if request.auth != null && (request.auth.uid == userId ||
+        // admins can update any user
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).exists() &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'));
+    }
+
+    // Donations: authenticated users may create donations; owners and admins can read.
+    match /donations/{donationId} {
+      allow create: if request.auth != null
+        && request.resource.data.category is string
+        && request.resource.data.type is string
+        && (request.resource.data.type == 'in_kind' || request.resource.data.type == 'cash')
+        && request.resource.data.status == 'pending';
+
+      // Helper function to check if user is admin
+      function isAdmin() {
+        return request.auth != null && 
+               get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      }
+
+      allow read: if request.auth != null && (
+        resource.data.userId == request.auth.uid ||
+        isAdmin()
+      );
+
+      // Only admins may update donation status/verification fields
+      allow update: if isAdmin();
+    }
+
+    // Audit logs: only server (admin) can write/read
+    match /auditLogs/{logId} {
+      allow read, write: if false;
+    }
+
+    // Messages: donors can create/read their own messages; admins can create/read/update all
+    match /messages/{messageId} {
+      // Helper function to check if user is admin
+      function isAdmin() {
+        return request.auth != null && 
+               get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      }
+
+      allow create: if request.auth != null;
+      
+      allow read: if request.auth != null && (
+        resource.data.userId == request.auth.uid ||
+        isAdmin()
+      );
+      
+      allow update, delete: if isAdmin();
+    }
+
+    // Default: deny everything else
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
